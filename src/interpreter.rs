@@ -37,6 +37,7 @@ impl<'a> Interpreter<'a> {
 
     fn evaluate_expression(&mut self, expression: Expression) -> Result<i32, String> {
         match expression {
+            Expression::Group(expression) => self.evaluate_expression(*expression),
             Expression::Number(value) => Ok(value as i32),
             Expression::Variable(name) => {
                 if let Some(value) = self.variables.get(&name) {

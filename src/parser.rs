@@ -12,11 +12,10 @@ impl<'a> Parser<'a> {
 
     pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
         let mut statements = vec![];
-        let mut found_operand = false;
 
         while let Some(token) = self.lexer.next_token() {
             match token {
-                Token::End => found_operand = true,
+                Token::End => {}
                 Token::Print => {
                     let expression = self.parse_expression()?;
                     statements.push(Statement::Print(expression));
@@ -32,8 +31,6 @@ impl<'a> Parser<'a> {
                                 return Err(format!("parse::Unexpected token: {:?}", token));
                             }
                         }
-                    } else if found_operand {
-                        found_operand = false;
                     }
                 }
                 _ => {
@@ -47,9 +44,21 @@ impl<'a> Parser<'a> {
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
         let mut expression = self.parse_value()?;
+        let mut found_group = vec![];
 
         if let Some(token) = self.lexer.next_token() {
             match token {
+                Token::LParen => {
+                    let term = self.parse_expression()?;
+                    found_group.push(term);
+                }
+                Token::RParen => {
+                    if let Some(term) = found_group.pop() {
+                        expression = Expression::Group(Box::new(term));
+                    } else {
+                        return Err(format!("parse::Unexpected token: {:?}", token));
+                    }
+                }
                 Token::Plus => {
                     let term = self.parse_value()?;
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
@@ -66,25 +75,15 @@ impl<'a> Parser<'a> {
                     let term = self.parse_value()?;
                     expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
-                Token::LParen => {
-                    expression = self.parse_expression()?;
-                    if let Some(token) = self.lexer.next_token() {
-                        match token {
-                            Token::RParen => {}
-                            _ => {
-                                return Err(format!(
-                                    "parse_expression::LParen::Unexpected token: {:?}",
-                                    token
-                                ));
-                            }
-                        }
-                    }
-                }
                 Token::Factorial => {
                     expression = Expression::Factorial(Box::new(expression));
                 }
                 _ => {}
             }
+        }
+
+        if found_group.len() > 0 {
+            return Err("parse::Unbalanced parentheses".to_owned());
         }
 
         Ok(expression)
@@ -208,6 +207,23 @@ mod tests {
                 Box::new(Expression::Number(1.0)),
                 Box::new(Expression::Number(2.0))
             )
+        );
+    }
+
+    // test parse expression with parenthesis
+    #[test]
+    fn test_parse_expression_parenthesis() {
+        use super::*;
+        let mut lexer = Lexer::new("(1 + 2)");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Group(Box::new(Expression::Plus(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )))
         );
     }
 
