@@ -3,11 +3,15 @@ use crate::lexer::Lexer;
 
 pub struct Parser<'a> {
     pub lexer: &'a mut Lexer<'a>,
+    pub found_group: Vec<Expression>,
 }
 
 impl<'a> Parser<'a> {
     pub fn new(lexer: &'a mut Lexer<'a>) -> Self {
-        Parser { lexer }
+        Parser {
+            lexer,
+            found_group: vec![],
+        }
     }
 
     pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
@@ -44,21 +48,9 @@ impl<'a> Parser<'a> {
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
         let mut expression = self.parse_value()?;
-        let mut found_group = vec![];
 
         if let Some(token) = self.lexer.next_token() {
             match token {
-                Token::LParen => {
-                    let term = self.parse_expression()?;
-                    found_group.push(term);
-                }
-                Token::RParen => {
-                    if let Some(term) = found_group.pop() {
-                        expression = Expression::Group(Box::new(term));
-                    } else {
-                        return Err(format!("parse::Unexpected token: {:?}", token));
-                    }
-                }
                 Token::Plus => {
                     let term = self.parse_value()?;
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
@@ -78,11 +70,18 @@ impl<'a> Parser<'a> {
                 Token::Factorial => {
                     expression = Expression::Factorial(Box::new(expression));
                 }
+                Token::RParen => {
+                    if let Some(term) = self.found_group.pop() {
+                        expression = Expression::Group(Box::new(term));
+                    } else {
+                        return Err(format!("parse::Unexpected token: {:?}", token));
+                    }
+                }
                 _ => {}
             }
         }
 
-        if found_group.len() > 0 {
+        if self.found_group.len() > 0 {
             return Err("parse::Unbalanced parentheses".to_owned());
         }
 
@@ -102,6 +101,10 @@ impl<'a> Parser<'a> {
                 }
                 Token::Identifier(name) => {
                     value = Expression::Variable(name);
+                }
+                Token::LParen => {
+                    let term = self.parse_expression()?;
+                    self.found_group.push(term);
                 }
                 _ => {}
             }
