@@ -23,7 +23,8 @@ fn main() {
     // repl command
     if (args[1] == "-r") || (args[1] == "--repl") {
         println!("Rustic REPL");
-        println!("Type 'exit' to exit or enter Ctrl+C");
+        println!("Type 'exit' to exit or enter Ctrl+C\n");
+        print!(">>> ");
         loop {
             let mut input = String::new();
             std::io::stdin()
@@ -33,6 +34,7 @@ fn main() {
                 break;
             }
             run(&input);
+            print!(">>> ");
         }
         return;
     }
