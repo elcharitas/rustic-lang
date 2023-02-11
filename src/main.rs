@@ -20,6 +20,11 @@ fn main() {
     let path = Path::new(source_file);
     let source_code = std::fs::read_to_string(path).expect("Error reading source file");
 
+    // run the program
+    run(&source_code);
+}
+
+fn run(source_code: &str) {
     let mut lexer = Lexer::new(&source_code);
     let mut parser = Parser::new(&mut lexer);
     let mut interpreter = Interpreter::new(&mut parser);
