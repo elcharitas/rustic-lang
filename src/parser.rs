@@ -15,6 +15,9 @@ impl<'a> Parser<'a> {
 
         while let Some(token) = self.lexer.next_token() {
             match token {
+                Token::Semicolon => {
+                    break;
+                }
                 Token::Print => {
                     let expression = self.parse_expression()?;
                     statements.push(Statement::Print(expression));
@@ -94,6 +97,9 @@ impl<'a> Parser<'a> {
                 Token::Dot => {
                     number = Expression::Decimal(Box::new(number));
                 }
+                Token::Identifier(name) => {
+                    number = Expression::Variable(name);
+                }
                 _ => {}
             }
         }
@@ -117,6 +123,23 @@ mod tests {
                 "x".to_string(),
                 Expression::Number(1.0)
             )]
+        );
+    }
+
+    // parse variable and Print
+    #[test]
+    fn test_parse_variable() {
+        use super::*;
+        let mut lexer = Lexer::new("x = 1; print x");
+        let mut parser = Parser::new(&mut lexer);
+        let statements = parser.parse().unwrap();
+
+        assert_eq!(
+            statements,
+            vec![
+                Statement::Assignment("x".to_string(), Expression::Number(1.0)),
+                Statement::Print(Expression::Variable("x".to_string()))
+            ]
         );
     }
 
