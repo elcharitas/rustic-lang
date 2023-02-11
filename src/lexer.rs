@@ -22,11 +22,11 @@ impl<'a> Lexer<'a> {
                 None => return None,
                 Some(&';') => {
                     chars.next();
-                    return Some(Token::Semicolon);
+                    return Some(Token::End);
                 }
                 Some(&'\n') => {
                     chars.next();
-                    return Some(Token::Semicolon);
+                    return Some(Token::End);
                 }
                 Some(&c) if c.is_whitespace() => {
                     chars.next();

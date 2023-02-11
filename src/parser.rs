@@ -16,7 +16,7 @@ impl<'a> Parser<'a> {
 
         while let Some(token) = self.lexer.next_token() {
             match token {
-                Token::Semicolon => found_operand = true,
+                Token::End => found_operand = true,
                 Token::Print => {
                     let expression = self.parse_expression()?;
                     statements.push(Statement::Print(expression));

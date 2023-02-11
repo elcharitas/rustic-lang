@@ -10,7 +10,7 @@ pub enum Token {
     RParen,
     Identifier(String),
     Equal,
-    Semicolon,
+    End,
     Print,
     Dot,
 }
