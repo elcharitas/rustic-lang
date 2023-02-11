@@ -65,6 +65,10 @@ impl<'a> Interpreter<'a> {
                 let right = self.evaluate_expression(*right)?;
                 Ok(left / right)
             }
+            Expression::Factorial(factor) => {
+                let factor = self.evaluate_expression(*factor)?;
+                Ok((1..=factor).product())
+            }
             Expression::Decimal(_) => todo!(),
             Expression::Power(_, _) => todo!(),
             Expression::None => Ok(0),
