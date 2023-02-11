@@ -210,6 +210,23 @@ mod tests {
         );
     }
 
+    // test parse expression with parenthesis
+    #[test]
+    fn test_parse_expression_parenthesis() {
+        use super::*;
+        let mut lexer = Lexer::new("(1 + 2)");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Group(Box::new(Expression::Plus(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )))
+        );
+    }
+
     #[test]
     fn test_parse_print() {
         use super::*;
