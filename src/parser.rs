@@ -44,9 +44,21 @@ impl<'a> Parser<'a> {
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
         let mut expression = self.parse_value()?;
+        let mut found_group = vec![];
 
         if let Some(token) = self.lexer.next_token() {
             match token {
+                Token::LParen => {
+                    let term = self.parse_expression()?;
+                    found_group.push(term);
+                }
+                Token::RParen => {
+                    if found_group.len() > 0 {
+                        expression = Expression::Group(Box::new(found_group.pop().unwrap()));
+                    } else {
+                        return Err(format!("parse::Unexpected token: {:?}", token));
+                    }
+                }
                 Token::Plus => {
                     let term = self.parse_value()?;
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
