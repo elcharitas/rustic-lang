@@ -33,6 +33,14 @@ fn main() {
             if input.trim() == "exit" {
                 break;
             }
+            // if the input is empty, continue
+            if input.trim().is_empty() {
+                continue;
+            }
+            // if the input does not end with ';', add it
+            if !input.trim().ends_with(';') {
+                input.push(';');
+            }
             run(&format!("{}\n", input));
         }
         return;
