@@ -20,6 +20,14 @@ impl<'a> Lexer<'a> {
         loop {
             match chars.peek() {
                 None => return None,
+                Some(&';') => {
+                    chars.next();
+                    return Some(Token::Semicolon);
+                }
+                Some(&'\n') => {
+                    chars.next();
+                    return Some(Token::Semicolon);
+                }
                 Some(&c) if c.is_whitespace() => {
                     chars.next();
                     continue;
@@ -92,10 +100,6 @@ impl<'a> Lexer<'a> {
                 Some(&'=') => {
                     chars.next();
                     return Some(Token::Equal);
-                }
-                Some(&';') => {
-                    chars.next();
-                    return Some(Token::Semicolon);
                 }
                 Some(&'.') => {
                     chars.next();

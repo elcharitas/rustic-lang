@@ -12,12 +12,11 @@ impl<'a> Parser<'a> {
 
     pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
         let mut statements = vec![];
+        let mut found_operand = false;
 
         while let Some(token) = self.lexer.next_token() {
             match token {
-                Token::Semicolon => {
-                    break;
-                }
+                Token::Semicolon => found_operand = true,
                 Token::Print => {
                     let expression = self.parse_expression()?;
                     statements.push(Statement::Print(expression));
@@ -33,6 +32,8 @@ impl<'a> Parser<'a> {
                                 return Err(format!("parse::Unexpected token: {:?}", token));
                             }
                         }
+                    } else if found_operand {
+                        found_operand = false;
                     }
                 }
                 _ => {
@@ -130,7 +131,7 @@ mod tests {
     #[test]
     fn test_parse_variable() {
         use super::*;
-        let mut lexer = Lexer::new("x = 1;\nprint x");
+        let mut lexer = Lexer::new("x = 1\nprint x");
         let mut parser = Parser::new(&mut lexer);
         let statements = parser.parse().unwrap();
 
