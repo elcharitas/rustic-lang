@@ -100,4 +100,16 @@ mod tests {
         interpreter.interpret().unwrap();
         assert_eq!(interpreter.variables.get("a"), None);
     }
+
+    #[test]
+    fn test_interpreter_factorial() {
+        use super::*;
+        use crate::lexer::Lexer;
+
+        let mut lexer = Lexer::new("a = 5!");
+        let mut parser = Parser::new(&mut lexer);
+        let mut interpreter = Interpreter::new(&mut parser);
+        interpreter.interpret().unwrap();
+        assert_eq!(interpreter.variables.get("a"), Some(&120));
+    }
 }
