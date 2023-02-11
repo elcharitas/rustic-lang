@@ -53,8 +53,8 @@ impl<'a> Parser<'a> {
                     found_group.push(term);
                 }
                 Token::RParen => {
-                    if found_group.len() > 0 {
-                        expression = Expression::Group(Box::new(found_group.pop().unwrap()));
+                    if let Some(term) = found_group.pop() {
+                        expression = Expression::Group(Box::new(term));
                     } else {
                         return Err(format!("parse::Unexpected token: {:?}", token));
                     }
@@ -75,27 +75,15 @@ impl<'a> Parser<'a> {
                     let term = self.parse_value()?;
                     expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
-                Token::LParen => {
-                    expression = self.parse_expression()?;
-                    if let Some(token) = self.lexer.next_token() {
-                        match token {
-                            Token::RParen => {
-                                expression = Expression::Group(Box::new(expression));
-                            }
-                            _ => {
-                                return Err(format!(
-                                    "parse_expression::LParen::Unexpected token: {:?}",
-                                    token
-                                ));
-                            }
-                        }
-                    }
-                }
                 Token::Factorial => {
                     expression = Expression::Factorial(Box::new(expression));
                 }
                 _ => {}
             }
+        }
+
+        if found_group.len() > 0 {
+            return Err("parse::Unbalanced parentheses".to_owned());
         }
 
         Ok(expression)
