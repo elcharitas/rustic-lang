@@ -11,14 +11,29 @@ use std::path::Path;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
-    if args.len() != 2 {
+    // help command
+    if (args.len() != 2) || (args[1] == "-h") || (args[1] == "--help") {
         println!("Usage: rustic <source_file>");
+        println!("Options:");
+        println!("  -h, --help\t\tShow this help message");
+        println!("  -r, --repl\t\tStart the Rustic REPL");
         return;
     }
 
-    // help command
-    if (args[1] == "-h") || (args[1] == "--help") {
-        println!("Usage: rustic <source_file>");
+    // repl command
+    if (args[1] == "-r") || (args[1] == "--repl") {
+        println!("Rustic REPL");
+        println!("Type 'exit' to exit or enter Ctrl+C");
+        loop {
+            let mut input = String::new();
+            std::io::stdin()
+                .read_line(&mut input)
+                .expect("Error reading input");
+            if input.trim() == "exit" {
+                break;
+            }
+            run(&input);
+        }
         return;
     }
 
@@ -36,7 +51,7 @@ fn run(source_code: &str) {
     let mut interpreter = Interpreter::new(&mut parser);
 
     match interpreter.interpret() {
-        Ok(_) => println!("Program executed successfully"),
+        Ok(_) => {}
         Err(e) => println!("Error: {}", e),
     }
 }
