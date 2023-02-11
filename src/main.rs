@@ -16,6 +16,12 @@ fn main() {
         return;
     }
 
+    // help command
+    if (args[1] == "-h") || (args[1] == "--help") {
+        println!("Usage: rustic <source_file>");
+        return;
+    }
+
     let source_file = &args[1];
     let path = Path::new(source_file);
     let source_code = std::fs::read_to_string(path).expect("Error reading source file");
