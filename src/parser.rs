@@ -177,6 +177,38 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_expression_asterisk() {
+        use super::*;
+        let mut lexer = Lexer::new("1 * 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Asterisk(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_slash() {
+        use super::*;
+        let mut lexer = Lexer::new("1 / 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Slash(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
+        );
+    }
+
+    #[test]
     fn test_parse_print() {
         use super::*;
         let mut lexer = Lexer::new("print 1");
