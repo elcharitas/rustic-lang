@@ -12,11 +12,10 @@ impl<'a> Parser<'a> {
 
     pub fn parse(&mut self) -> Result<Vec<Statement>, String> {
         let mut statements = vec![];
-        let mut found_operand = false;
 
         while let Some(token) = self.lexer.next_token() {
             match token {
-                Token::End => found_operand = true,
+                Token::End => {}
                 Token::Print => {
                     let expression = self.parse_expression()?;
                     statements.push(Statement::Print(expression));
@@ -32,8 +31,6 @@ impl<'a> Parser<'a> {
                                 return Err(format!("parse::Unexpected token: {:?}", token));
                             }
                         }
-                    } else if found_operand {
-                        found_operand = false;
                     }
                 }
                 _ => {
