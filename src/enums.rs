@@ -32,4 +32,5 @@ pub enum Expression {
 pub enum Statement {
     Expression(Expression),
     Assignment(String, Expression),
+    Print(Expression),
 }

@@ -26,6 +26,10 @@ impl<'a> Interpreter<'a> {
                     let value = self.evaluate_expression(expression)?;
                     self.variables.insert(name, value);
                 }
+                Statement::Print(expression) => {
+                    let value = self.evaluate_expression(expression)?;
+                    println!("{}", value);
+                }
             }
         }
         Ok(())
@@ -61,7 +65,7 @@ impl<'a> Interpreter<'a> {
                 let right = self.evaluate_expression(*right)?;
                 Ok(left / right)
             }
-            Expression::Decimal(_, _) => todo!(),
+            Expression::Decimal(_) => todo!(),
             Expression::Power(_, _) => todo!(),
             Expression::None => Ok(0),
         }
