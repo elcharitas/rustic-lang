@@ -45,24 +45,24 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
-        let mut expression = self.parse_number()?;
+        let mut expression = self.parse_value()?;
 
         if let Some(token) = self.lexer.next_token() {
             match token {
                 Token::Plus => {
-                    let term = self.parse_number()?;
+                    let term = self.parse_value()?;
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
                 }
                 Token::Minus => {
-                    let term = self.parse_number()?;
+                    let term = self.parse_value()?;
                     expression = Expression::Minus(Box::new(expression), Box::new(term));
                 }
                 Token::Star => {
-                    let term = self.parse_number()?;
+                    let term = self.parse_value()?;
                     expression = Expression::Asterisk(Box::new(expression), Box::new(term));
                 }
                 Token::Slash => {
-                    let term = self.parse_number()?;
+                    let term = self.parse_value()?;
                     expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
                 Token::LParen => {
@@ -86,25 +86,25 @@ impl<'a> Parser<'a> {
         Ok(expression)
     }
 
-    fn parse_number(&mut self) -> Result<Expression, String> {
-        let mut number = Expression::None;
+    fn parse_value(&mut self) -> Result<Expression, String> {
+        let mut value = Expression::None;
 
         if let Some(token) = self.lexer.next_token() {
             match token {
-                Token::Number(value) => {
-                    number = Expression::Number(value);
+                Token::Number(number) => {
+                    value = Expression::Number(number);
                 }
                 Token::Dot => {
-                    number = Expression::Decimal(Box::new(number));
+                    value = Expression::Decimal(Box::new(value));
                 }
                 Token::Identifier(name) => {
-                    number = Expression::Variable(name);
+                    value = Expression::Variable(name);
                 }
                 _ => {}
             }
         }
 
-        Ok(number)
+        Ok(value)
     }
 }
 
