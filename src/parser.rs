@@ -17,7 +17,7 @@ impl<'a> Parser<'a> {
             match token {
                 Token::Print => {
                     let expression = self.parse_expression()?;
-                    statements.push(Statement::Expression(expression));
+                    statements.push(Statement::Print(expression));
                 }
                 Token::Identifier(name) => {
                     if let Some(token) = self.lexer.next_token() {
@@ -33,7 +33,8 @@ impl<'a> Parser<'a> {
                     }
                 }
                 _ => {
-                    return Err(format!("parse::Unexpected token: {:?}", token));
+                    let expression = self.parse_expression()?;
+                    statements.push(Statement::Expression(expression));
                 }
             }
         }
@@ -41,15 +42,26 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
-        let mut expression = Expression::None;
+        let mut expression = self.parse_term()?;
+        let mut found_operand = false;
 
         while let Some(token) = self.lexer.next_token() {
             match token {
                 Token::Plus => {
+                    if !found_operand {
+                        return Err(String::from(
+                            "parse_expression: No left-hand operand for '+'",
+                        ));
+                    }
                     let term = self.parse_term()?;
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
                 }
                 Token::Minus => {
+                    if !found_operand {
+                        return self
+                            .parse_term()
+                            .map(|t| Expression::Minus(Box::new(Expression::None), Box::new(t)));
+                    }
                     let term = self.parse_term()?;
                     expression = Expression::Minus(Box::new(expression), Box::new(term));
                 }
@@ -58,7 +70,7 @@ impl<'a> Parser<'a> {
                     if let Some(token) = self.lexer.next_token() {
                         match token {
                             Token::RParen => {
-                                return Ok(expression);
+                                found_operand = true;
                             }
                             _ => {
                                 return Err(format!(
@@ -69,9 +81,7 @@ impl<'a> Parser<'a> {
                         }
                     }
                 }
-                _ => {
-                    return self.parse_term();
-                }
+                _ => {}
             }
         }
 
@@ -91,9 +101,7 @@ impl<'a> Parser<'a> {
                     let factor = self.parse_factor()?;
                     term = Expression::Slash(Box::new(term), Box::new(factor));
                 }
-                _ => {
-                    return Err(format!("parse_term::Unexpected token: {:?}", token));
-                }
+                _ => {}
             }
         }
 
@@ -109,9 +117,7 @@ impl<'a> Parser<'a> {
                     let primary = self.parse_primary()?;
                     factor = Expression::Power(Box::new(factor), Box::new(primary));
                 }
-                _ => {
-                    return Err(format!("parse_factor::Unexpected token: {:?}", token));
-                }
+                _ => {}
             }
         }
 
@@ -137,9 +143,7 @@ impl<'a> Parser<'a> {
                         }
                     }
                 }
-                _ => {
-                    return Err(format!("parse_primary::Unexpected token: {:?}", token));
-                }
+                _ => {}
             }
         }
 
@@ -152,8 +156,7 @@ impl<'a> Parser<'a> {
         while let Some(token) = self.lexer.next_token() {
             match token {
                 Token::Char('.') => {
-                    let digit = self.parse_digit()?;
-                    number = Expression::Decimal(Box::new(number), Box::new(digit));
+                    number = Expression::Decimal(Box::new(number));
                 }
                 _ => number = Expression::None,
             }
@@ -163,11 +166,12 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_digit(&mut self) -> Result<Expression, String> {
-        let mut digit = Expression::Number(0.0);
+        let mut digit = Expression::None;
 
         while let Some(token) = self.lexer.next_token() {
             match token {
                 Token::Number(value) => digit = Expression::Number(value),
+                Token::Dot => digit = Expression::Decimal(Box::new(digit)),
                 _ => digit = Expression::None,
             }
         }
@@ -181,7 +185,7 @@ mod tests {
     #[test]
     fn test_parse() {
         use super::*;
-        let mut lexer = Lexer::new("x = 1 + 3");
+        let mut lexer = Lexer::new("x = 1");
         let mut parser = Parser::new(&mut lexer);
         let statements = parser.parse().unwrap();
 
@@ -189,14 +193,50 @@ mod tests {
             statements,
             vec![Statement::Assignment(
                 "x".to_string(),
-                Expression::Plus(
-                    Box::new(Expression::Number(1.0)),
-                    Box::new(Expression::Asterisk(
-                        Box::new(Expression::Number(2.0)),
-                        Box::new(Expression::Number(3.0))
-                    ))
-                )
+                Expression::Number(1.0)
             )]
         );
+    }
+
+    #[test]
+    fn test_parse_expression() {
+        use super::*;
+        let mut lexer = Lexer::new("1 + 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Plus(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_minus() {
+        use super::*;
+        let mut lexer = Lexer::new("1 - 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Minus(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
+        );
+    }
+
+    #[test]
+    fn test_parse_print() {
+        use super::*;
+        let mut lexer = Lexer::new("print 1");
+        let mut parser = Parser::new(&mut lexer);
+        let statements = parser.parse().unwrap();
+
+        assert_eq!(statements, vec![Statement::Print(Expression::Number(1.0))]);
     }
 }
