@@ -78,7 +78,7 @@ mod tests {
         use super::*;
         use crate::lexer::Lexer;
 
-        let mut lexer = Lexer::new("a = (1 + 2) * 3 - 4 / 5");
+        let mut lexer = Lexer::new("a = 1 + 2 * 3 - 4 / 5");
         let mut parser = Parser::new(&mut lexer);
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();

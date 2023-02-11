@@ -48,12 +48,10 @@ impl<'a> Parser<'a> {
             match token {
                 Token::Plus => {
                     let term = self.parse_number()?;
-                    println!("plus::term: {:?}", term);
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
                 }
                 Token::Minus => {
                     let term = self.parse_number()?;
-                    println!("minus::term: {:?}", term);
                     expression = Expression::Minus(Box::new(expression), Box::new(term));
                 }
                 Token::Star => {
@@ -89,7 +87,6 @@ impl<'a> Parser<'a> {
         let mut number = Expression::None;
 
         if let Some(token) = self.lexer.next_token() {
-            println!("parse_number::token: {:?}", token);
             match token {
                 Token::Number(value) => {
                     number = Expression::Number(value);
