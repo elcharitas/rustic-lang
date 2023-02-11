@@ -6,6 +6,7 @@ pub mod parser;
 use crate::interpreter::Interpreter;
 use crate::lexer::Lexer;
 use crate::parser::Parser;
+use std::io::{stdin, stdout, Write};
 use std::path::Path;
 
 fn main() {
@@ -24,17 +25,15 @@ fn main() {
     if (args[1] == "-r") || (args[1] == "--repl") {
         println!("Rustic REPL");
         println!("Type 'exit' to exit or enter Ctrl+C\n");
-        print!(">>> ");
         let mut input = String::new();
         loop {
-            std::io::stdin()
-                .read_line(&mut input)
-                .expect("Error reading input");
+            print!(">>> ");
+            stdout().flush().unwrap();
+            stdin().read_line(&mut input).expect("Error reading input");
             if input.trim() == "exit" {
                 break;
             }
             run(&format!("{}\n", input));
-            print!(">>> ");
         }
         return;
     }
