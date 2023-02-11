@@ -80,6 +80,9 @@ impl<'a> Parser<'a> {
                         }
                     }
                 }
+                Token::Factorial => {
+                    expression = Expression::Factorial(Box::new(expression));
+                }
                 _ => {}
             }
         }
@@ -184,5 +187,18 @@ mod tests {
         let statements = parser.parse().unwrap();
 
         assert_eq!(statements, vec![Statement::Print(Expression::Number(1.0))]);
+    }
+
+    #[test]
+    fn test_parse_expression_factorial() {
+        use super::*;
+        let mut lexer = Lexer::new("1!");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Factorial(Box::new(Expression::Number(1.0)))
+        );
     }
 }

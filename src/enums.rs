@@ -2,17 +2,18 @@
 pub enum Token {
     Char(char),
     Number(f64),
+    Identifier(String),
     Plus,
     Minus,
     Star,
     Slash,
     LParen,
     RParen,
-    Identifier(String),
     Equal,
     End,
     Print,
     Dot,
+    Factorial,
 }
 
 #[derive(Debug, PartialEq)]
@@ -25,6 +26,7 @@ pub enum Expression {
     Variable(String),
     Decimal(Box<Expression>),
     Power(Box<Expression>, Box<Expression>),
+    Factorial(Box<Expression>),
     None,
 }
 

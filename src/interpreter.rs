@@ -65,6 +65,10 @@ impl<'a> Interpreter<'a> {
                 let right = self.evaluate_expression(*right)?;
                 Ok(left / right)
             }
+            Expression::Factorial(factor) => {
+                let factor = self.evaluate_expression(*factor)?;
+                Ok((1..=factor).product())
+            }
             Expression::Decimal(_) => todo!(),
             Expression::Power(_, _) => todo!(),
             Expression::None => Ok(0),
@@ -95,5 +99,17 @@ mod tests {
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
         assert_eq!(interpreter.variables.get("a"), None);
+    }
+
+    #[test]
+    fn test_interpreter_factorial() {
+        use super::*;
+        use crate::lexer::Lexer;
+
+        let mut lexer = Lexer::new("a = 5!");
+        let mut parser = Parser::new(&mut lexer);
+        let mut interpreter = Interpreter::new(&mut parser);
+        interpreter.interpret().unwrap();
+        assert_eq!(interpreter.variables.get("a"), Some(&120));
     }
 }
