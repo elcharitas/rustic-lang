@@ -27,6 +27,7 @@ pub enum Expression {
     Decimal(Box<Expression>),
     Power(Box<Expression>, Box<Expression>),
     Factorial(Box<Expression>),
+    Group(Box<Expression>),
     None,
 }
 

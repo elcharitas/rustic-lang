@@ -67,7 +67,9 @@ impl<'a> Parser<'a> {
                     expression = self.parse_expression()?;
                     if let Some(token) = self.lexer.next_token() {
                         match token {
-                            Token::RParen => {}
+                            Token::RParen => {
+                                expression = Expression::Group(Box::new(expression));
+                            }
                             _ => {
                                 return Err(format!(
                                     "parse_expression::LParen::Unexpected token: {:?}",
