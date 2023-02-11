@@ -11,3 +11,6 @@ test: build
 
 clean:
 	cargo clean
+
+bundle:
+	rustc --crate-name rustic --crate-type bin src/main.rs --out-dir bin
