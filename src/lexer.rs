@@ -97,6 +97,10 @@ impl<'a> Lexer<'a> {
                     chars.next();
                     return Some(Token::Semicolon);
                 }
+                Some(&'.') => {
+                    chars.next();
+                    return Some(Token::Dot);
+                }
                 _ => return None,
             }
         }

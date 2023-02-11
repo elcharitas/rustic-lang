@@ -12,6 +12,7 @@ pub enum Token {
     Equal,
     Semicolon,
     Print,
+    Dot,
 }
 
 #[derive(Debug, PartialEq)]
@@ -22,7 +23,7 @@ pub enum Expression {
     Asterisk(Box<Expression>, Box<Expression>),
     Slash(Box<Expression>, Box<Expression>),
     Variable(String),
-    Decimal(Box<Expression>, Box<Expression>),
+    Decimal(Box<Expression>),
     Power(Box<Expression>, Box<Expression>),
     None,
 }
