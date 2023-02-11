@@ -42,36 +42,33 @@ impl<'a> Parser<'a> {
     }
 
     fn parse_expression(&mut self) -> Result<Expression, String> {
-        let mut expression = self.parse_term()?;
-        let mut found_operand = false;
+        let mut expression = self.parse_number()?;
 
-        while let Some(token) = self.lexer.next_token() {
+        if let Some(token) = self.lexer.next_token() {
             match token {
                 Token::Plus => {
-                    if !found_operand {
-                        return Err(String::from(
-                            "parse_expression: No left-hand operand for '+'",
-                        ));
-                    }
-                    let term = self.parse_term()?;
+                    let term = self.parse_number()?;
+                    println!("plus::term: {:?}", term);
                     expression = Expression::Plus(Box::new(expression), Box::new(term));
                 }
                 Token::Minus => {
-                    if !found_operand {
-                        return self
-                            .parse_term()
-                            .map(|t| Expression::Minus(Box::new(Expression::None), Box::new(t)));
-                    }
-                    let term = self.parse_term()?;
+                    let term = self.parse_number()?;
+                    println!("minus::term: {:?}", term);
                     expression = Expression::Minus(Box::new(expression), Box::new(term));
+                }
+                Token::Star => {
+                    let term = self.parse_number()?;
+                    expression = Expression::Asterisk(Box::new(expression), Box::new(term));
+                }
+                Token::Slash => {
+                    let term = self.parse_number()?;
+                    expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
                 Token::LParen => {
                     expression = self.parse_expression()?;
                     if let Some(token) = self.lexer.next_token() {
                         match token {
-                            Token::RParen => {
-                                found_operand = true;
-                            }
+                            Token::RParen => {}
                             _ => {
                                 return Err(format!(
                                     "parse_expression::LParen::Unexpected token: {:?}",
@@ -88,95 +85,23 @@ impl<'a> Parser<'a> {
         Ok(expression)
     }
 
-    fn parse_term(&mut self) -> Result<Expression, String> {
-        let mut term = self.parse_factor()?;
-
-        while let Some(token) = self.lexer.next_token() {
-            match token {
-                Token::Star => {
-                    let factor = self.parse_factor()?;
-                    term = Expression::Asterisk(Box::new(term), Box::new(factor));
-                }
-                Token::Slash => {
-                    let factor = self.parse_factor()?;
-                    term = Expression::Slash(Box::new(term), Box::new(factor));
-                }
-                _ => {}
-            }
-        }
-
-        Ok(term)
-    }
-
-    fn parse_factor(&mut self) -> Result<Expression, String> {
-        let mut factor = self.parse_primary()?;
-
-        while let Some(token) = self.lexer.next_token() {
-            match token {
-                Token::Char('^') => {
-                    let primary = self.parse_primary()?;
-                    factor = Expression::Power(Box::new(factor), Box::new(primary));
-                }
-                _ => {}
-            }
-        }
-
-        Ok(factor)
-    }
-
-    fn parse_primary(&mut self) -> Result<Expression, String> {
-        let mut primary = self.parse_number()?;
-
-        while let Some(token) = self.lexer.next_token() {
-            match token {
-                Token::LParen => {
-                    primary = self.parse_primary()?;
-                    if let Some(token) = self.lexer.next_token() {
-                        match token {
-                            Token::RParen => {}
-                            _ => {
-                                return Err(format!(
-                                    "parse_primary::LParen::Unexpected token: {:?}",
-                                    token
-                                ));
-                            }
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-
-        Ok(primary)
-    }
-
     fn parse_number(&mut self) -> Result<Expression, String> {
-        let mut number = self.parse_digit()?;
+        let mut number = Expression::None;
 
-        while let Some(token) = self.lexer.next_token() {
+        if let Some(token) = self.lexer.next_token() {
+            println!("parse_number::token: {:?}", token);
             match token {
-                Token::Char('.') => {
+                Token::Number(value) => {
+                    number = Expression::Number(value);
+                }
+                Token::Dot => {
                     number = Expression::Decimal(Box::new(number));
                 }
-                _ => number = Expression::None,
+                _ => {}
             }
         }
 
         Ok(number)
-    }
-
-    fn parse_digit(&mut self) -> Result<Expression, String> {
-        let mut digit = Expression::None;
-
-        while let Some(token) = self.lexer.next_token() {
-            match token {
-                Token::Number(value) => digit = Expression::Number(value),
-                Token::Dot => digit = Expression::Decimal(Box::new(digit)),
-                _ => digit = Expression::None,
-            }
-        }
-
-        Ok(digit)
     }
 }
 
