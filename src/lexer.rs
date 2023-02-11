@@ -36,18 +36,6 @@ impl<'a> Lexer<'a> {
                     }
                     return Some(Token::Number(number.parse().unwrap()));
                 }
-                Some(&c) if c.is_alphabetic() => {
-                    let mut identifier = String::new();
-                    while let Some(&c) = chars.peek() {
-                        if c.is_alphanumeric() {
-                            identifier.push(c);
-                            chars.next();
-                        } else {
-                            break;
-                        }
-                    }
-                    return Some(Token::Identifier(identifier));
-                }
                 Some(&'p') => {
                     chars.next();
                     if let Some(&'r') = chars.peek() {
@@ -64,6 +52,18 @@ impl<'a> Lexer<'a> {
                         }
                     }
                     return None;
+                }
+                Some(&c) if c.is_alphabetic() => {
+                    let mut identifier = String::new();
+                    while let Some(&c) = chars.peek() {
+                        if c.is_alphanumeric() {
+                            identifier.push(c);
+                            chars.next();
+                        } else {
+                            break;
+                        }
+                    }
+                    return Some(Token::Identifier(identifier));
                 }
                 Some(&'+') => {
                     chars.next();
