@@ -1,0 +1,3 @@
+val = 5;
+fac = val!;
+print fac;
