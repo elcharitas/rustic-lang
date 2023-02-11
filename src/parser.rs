@@ -130,7 +130,7 @@ mod tests {
     #[test]
     fn test_parse_variable() {
         use super::*;
-        let mut lexer = Lexer::new("x = 1; print x");
+        let mut lexer = Lexer::new("x = 1;\nprint x");
         let mut parser = Parser::new(&mut lexer);
         let statements = parser.parse().unwrap();
 

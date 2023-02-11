@@ -25,15 +25,15 @@ fn main() {
         println!("Rustic REPL");
         println!("Type 'exit' to exit or enter Ctrl+C\n");
         print!(">>> ");
+        let mut input = String::new();
         loop {
-            let mut input = String::new();
             std::io::stdin()
                 .read_line(&mut input)
                 .expect("Error reading input");
             if input.trim() == "exit" {
                 break;
             }
-            run(&input);
+            run(&format!("{}\n", input));
             print!(">>> ");
         }
         return;
