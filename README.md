@@ -1,8 +1,10 @@
+<img src="./.github/rustic.png"/>
+
 # Rustic
 
 > An opinionated numeric interpreter in Rust
 
-Rustic is a simple and straightforward interpreted programming language, designed for performing mathematical computations.
+Rustic is a simple, opinionated and straightforward interpreted programming language, designed for performing mathematical computations.
 It's written in Rust, a systems programming language known for its performance and safety guarantees.
 Rustic only accepts `numeric values`, making it a suitable tool for solving mathematical problems with ease.
 
