@@ -96,9 +96,6 @@ impl<'a> Parser<'a> {
                 Token::Number(number) => {
                     value = Expression::Number(number);
                 }
-                Token::Dot => {
-                    value = Expression::Decimal(Box::new(value));
-                }
                 Token::Identifier(name) => {
                     value = Expression::Variable(name);
                 }

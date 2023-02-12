@@ -4,7 +4,7 @@ use std::collections::HashMap;
 
 pub struct Interpreter<'a> {
     parser: &'a mut Parser<'a>,
-    pub variables: HashMap<String, i32>,
+    pub variables: HashMap<String, f64>,
 }
 
 impl<'a> Interpreter<'a> {
@@ -35,10 +35,10 @@ impl<'a> Interpreter<'a> {
         Ok(())
     }
 
-    fn evaluate_expression(&mut self, expression: Expression) -> Result<i32, String> {
+    fn evaluate_expression(&mut self, expression: Expression) -> Result<f64, String> {
         match expression {
             Expression::Group(expression) => self.evaluate_expression(*expression),
-            Expression::Number(value) => Ok(value as i32),
+            Expression::Number(value) => Ok(value),
             Expression::Variable(name) => {
                 if let Some(value) = self.variables.get(&name) {
                     Ok(*value)
@@ -67,12 +67,12 @@ impl<'a> Interpreter<'a> {
                 Ok(left / right)
             }
             Expression::Factorial(factor) => {
-                let factor = self.evaluate_expression(*factor)?;
-                Ok((1..=factor).product())
+                let factor = self.evaluate_expression(*factor)? as i32;
+                let result: i32 = (1..=factor).product();
+                Ok(result as f64)
             }
-            Expression::Decimal(_) => todo!(),
             Expression::Power(_, _) => todo!(),
-            Expression::None => Ok(0),
+            Expression::None => Ok(0.0),
         }
     }
 }
@@ -87,7 +87,7 @@ mod tests {
         let mut parser = Parser::new(&mut lexer);
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
-        assert_eq!(interpreter.variables.get("a"), Some(&3));
+        assert_eq!(interpreter.variables.get("a"), Some(&3.0));
     }
 
     #[test]
@@ -111,6 +111,6 @@ mod tests {
         let mut parser = Parser::new(&mut lexer);
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
-        assert_eq!(interpreter.variables.get("a"), Some(&120));
+        assert_eq!(interpreter.variables.get("a"), Some(&120.0));
     }
 }

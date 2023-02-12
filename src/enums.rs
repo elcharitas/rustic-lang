@@ -24,7 +24,6 @@ pub enum Expression {
     Asterisk(Box<Expression>, Box<Expression>),
     Slash(Box<Expression>, Box<Expression>),
     Variable(String),
-    Decimal(Box<Expression>),
     Power(Box<Expression>, Box<Expression>),
     Factorial(Box<Expression>),
     Group(Box<Expression>),
