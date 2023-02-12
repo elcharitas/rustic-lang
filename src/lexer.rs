@@ -109,10 +109,6 @@ impl<'a> Lexer<'a> {
                     chars.next();
                     return Some(Token::Factorial);
                 }
-                Some(&'.') => {
-                    chars.next();
-                    return Some(Token::Dot);
-                }
                 _ => return None,
             }
         }
@@ -184,31 +180,6 @@ mod tests {
         assert_eq!(lexer.next_token(), Some(Token::Number(4.0)));
         assert_eq!(lexer.next_token(), Some(Token::Slash));
         assert_eq!(lexer.next_token(), Some(Token::Number(5.0)));
-        assert_eq!(lexer.next_token(), None);
-    }
-
-    #[test]
-    fn test_next_token_with_dot() {
-        let mut lexer = Lexer::new("1.0 + 2.0 - 3.0 * 4.0 / 5.0");
-        assert_eq!(lexer.next_token(), Some(Token::Number(1.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Dot));
-        assert_eq!(lexer.next_token(), Some(Token::Number(0.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Plus));
-        assert_eq!(lexer.next_token(), Some(Token::Number(2.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Dot));
-        assert_eq!(lexer.next_token(), Some(Token::Number(0.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Minus));
-        assert_eq!(lexer.next_token(), Some(Token::Number(3.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Dot));
-        assert_eq!(lexer.next_token(), Some(Token::Number(0.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Star));
-        assert_eq!(lexer.next_token(), Some(Token::Number(4.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Dot));
-        assert_eq!(lexer.next_token(), Some(Token::Number(0.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Slash));
-        assert_eq!(lexer.next_token(), Some(Token::Number(5.0)));
-        assert_eq!(lexer.next_token(), Some(Token::Dot));
-        assert_eq!(lexer.next_token(), Some(Token::Number(0.0)));
         assert_eq!(lexer.next_token(), None);
     }
 
