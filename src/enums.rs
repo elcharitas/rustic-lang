@@ -6,6 +6,7 @@ pub enum Token {
     Plus,
     Minus,
     Star,
+    Power,
     Slash,
     LParen,
     RParen,
