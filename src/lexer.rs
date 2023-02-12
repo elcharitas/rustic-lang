@@ -105,10 +105,6 @@ impl<'a> Lexer<'a> {
                     chars.next();
                     return Some(Token::Factorial);
                 }
-                Some(&'.') => {
-                    chars.next();
-                    return Some(Token::Dot);
-                }
                 _ => return None,
             }
         }
