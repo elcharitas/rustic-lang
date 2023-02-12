@@ -25,6 +25,33 @@ No other dependencies are required to be installed. Optionally, add it to your p
 Once you have the binary, you can run it in your terminal by executing `./rustic -r` to start a REPL.
 From there, you can start typing in mathematical expressions, and the result will be displayed on the screen. For example, try running `print 1 + 2` to see the result.
 
+### Features
+
+Some of the implemented features include
+
+-   factorials - E.g `2!`, `3!`, `190!`
+-   pi variable - pi is predefined for use.
+-   grouped calculations
+-   printing results with print
+-   storing data with variables.
+
+N/B: A variable in rustic is any alphanumeric word that can be assigned to.
+All variables are mutable by design. And can be reassigned even if system assigned(However, this is discouraged).
+
+#### Example
+
+```rtc
+myVar = 0;
+print myVar
+```
+
+### TODO
+
+-   Comments
+-   Constants
+-   Trigonometry Helpers
+-   TBD
+
 ## Contributing
 
 Rustic is an open-source project, and contributions are always welcome! If you would like to contribute, you can start by forking the official repository and submitting a pull request.
