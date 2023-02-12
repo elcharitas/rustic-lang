@@ -71,8 +71,12 @@ impl<'a> Interpreter<'a> {
                 let result: i32 = (1..=factor).product();
                 Ok(result as f64)
             }
-            Expression::Power(_, _) => todo!(),
-            Expression::None => Ok(0.0),
+            Expression::Power(left, right) => {
+                let left = self.evaluate_expression(*left)?;
+                let right = self.evaluate_expression(*right)?;
+                Ok(left.pow(right.try_into().unwrap()))
+            }
+            Expression::None => Ok(0),
         }
     }
 }
@@ -112,5 +116,17 @@ mod tests {
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
         assert_eq!(interpreter.variables.get("a"), Some(&120.0));
+    }
+
+    #[test]
+    fn test_interpreter_power() {
+        use super::*;
+        use crate::lexer::Lexer;
+
+        let mut lexer = Lexer::new("a = 2 ^ 3");
+        let mut parser = Parser::new(&mut lexer);
+        let mut interpreter = Interpreter::new(&mut parser);
+        interpreter.interpret().unwrap();
+        assert_eq!(interpreter.variables.get("a"), Some(&8));
     }
 }

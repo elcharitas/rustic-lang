@@ -67,6 +67,10 @@ impl<'a> Parser<'a> {
                     let term = self.parse_value()?;
                     expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
+                Token::Power => {
+                    let term = self.parse_value()?;
+                    expression = Expression::Power(Box::new(expression), Box::new(term))
+                }
                 Token::Factorial => {
                     expression = Expression::Factorial(Box::new(expression));
                 }
@@ -247,6 +251,22 @@ mod tests {
         assert_eq!(
             expression,
             Expression::Factorial(Box::new(Expression::Number(1.0)))
+        );
+    }
+
+    #[test]
+    fn test_parse_expression_power() {
+        use super::*;
+        let mut lexer = Lexer::new("1 ^ 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Power(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
         );
     }
 }

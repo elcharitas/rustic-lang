@@ -85,6 +85,10 @@ impl<'a> Lexer<'a> {
                     chars.next();
                     return Some(Token::Star);
                 }
+                Some(&'^') => {
+                    chars.next();
+                    return Some(Token::Power);
+                }
                 Some(&'/') => {
                     chars.next();
                     return Some(Token::Slash);
