@@ -74,9 +74,9 @@ impl<'a> Interpreter<'a> {
             Expression::Power(left, right) => {
                 let left = self.evaluate_expression(*left)?;
                 let right = self.evaluate_expression(*right)?;
-                Ok(left.pow(right.try_into().unwrap()))
+                Ok(left.powf(right.try_into().unwrap()))
             }
-            Expression::None => Ok(0),
+            Expression::None => Ok(0.0),
         }
     }
 }
@@ -127,6 +127,6 @@ mod tests {
         let mut parser = Parser::new(&mut lexer);
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
-        assert_eq!(interpreter.variables.get("a"), Some(&8));
+        assert_eq!(interpreter.variables.get("a"), Some(&8.0));
     }
 }
