@@ -75,7 +75,7 @@ impl<'a> Interpreter<'a> {
             Expression::Power(left, right) => {
                 let left = self.evaluate_expression(*left)?;
                 let right = self.evaluate_expression(*right)?;
-                Ok(left.powf(right.try_into().unwrap()))
+                Ok(left.powf(right))
             }
             Expression::None => Ok(0.0),
         }
