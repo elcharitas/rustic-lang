@@ -30,7 +30,8 @@ fn main() {
             print!(">>> ");
             stdout().flush().unwrap();
             stdin().read_line(&mut input).expect("Error reading input");
-            if input.trim() == "exit" {
+            if input.trim().split('\n').last() == Some("exit") {
+                println!("Exiting the REPL");
                 break;
             }
             // if the input is empty, continue
