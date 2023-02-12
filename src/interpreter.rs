@@ -1,6 +1,7 @@
 use crate::enums::{Expression, Statement};
 use crate::parser::Parser;
 use std::collections::HashMap;
+use std::f64::consts::PI;
 
 pub struct Interpreter<'a> {
     parser: &'a mut Parser<'a>,
@@ -11,7 +12,7 @@ impl<'a> Interpreter<'a> {
     pub fn new(parser: &'a mut Parser<'a>) -> Self {
         Interpreter {
             parser,
-            variables: HashMap::new(),
+            variables: HashMap::from([("pi".to_string(), PI)]),
         }
     }
 
