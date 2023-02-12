@@ -1,6 +1,7 @@
 use crate::enums::{Expression, Statement};
 use crate::parser::Parser;
 use std::collections::HashMap;
+use std::f64::consts::PI;
 
 pub struct Interpreter<'a> {
     parser: &'a mut Parser<'a>,
@@ -11,7 +12,7 @@ impl<'a> Interpreter<'a> {
     pub fn new(parser: &'a mut Parser<'a>) -> Self {
         Interpreter {
             parser,
-            variables: HashMap::new(),
+            variables: HashMap::from([("pi".to_string(), PI)]),
         }
     }
 
@@ -74,9 +75,9 @@ impl<'a> Interpreter<'a> {
             Expression::Power(left, right) => {
                 let left = self.evaluate_expression(*left)?;
                 let right = self.evaluate_expression(*right)?;
-                Ok(left.pow(right.try_into().unwrap()))
+                Ok(left.powf(right.try_into().unwrap()))
             }
-            Expression::None => Ok(0),
+            Expression::None => Ok(0.0),
         }
     }
 }
@@ -127,6 +128,6 @@ mod tests {
         let mut parser = Parser::new(&mut lexer);
         let mut interpreter = Interpreter::new(&mut parser);
         interpreter.interpret().unwrap();
-        assert_eq!(interpreter.variables.get("a"), Some(&8));
+        assert_eq!(interpreter.variables.get("a"), Some(&8.0));
     }
 }
