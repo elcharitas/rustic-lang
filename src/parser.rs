@@ -256,4 +256,20 @@ mod tests {
             Expression::Factorial(Box::new(Expression::Number(1.0)))
         );
     }
+
+    #[test]
+    fn test_parse_expression_power() {
+        use super::*;
+        let mut lexer = Lexer::new("1 ^ 2");
+        let mut parser = Parser::new(&mut lexer);
+        let expression = parser.parse_expression().unwrap();
+
+        assert_eq!(
+            expression,
+            Expression::Power(
+                Box::new(Expression::Number(1.0)),
+                Box::new(Expression::Number(2.0))
+            )
+        );
+    }
 }

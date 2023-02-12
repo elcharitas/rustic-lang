@@ -117,4 +117,16 @@ mod tests {
         interpreter.interpret().unwrap();
         assert_eq!(interpreter.variables.get("a"), Some(&120));
     }
+
+    #[test]
+    fn test_interpreter_power() {
+        use super::*;
+        use crate::lexer::Lexer;
+
+        let mut lexer = Lexer::new("a = 2 ^ 3");
+        let mut parser = Parser::new(&mut lexer);
+        let mut interpreter = Interpreter::new(&mut parser);
+        interpreter.interpret().unwrap();
+        assert_eq!(interpreter.variables.get("a"), Some(&8));
+    }
 }
