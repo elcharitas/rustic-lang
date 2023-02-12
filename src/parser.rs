@@ -67,6 +67,10 @@ impl<'a> Parser<'a> {
                     let term = self.parse_value()?;
                     expression = Expression::Slash(Box::new(expression), Box::new(term));
                 }
+                Token::Power => {
+                    let term = self.parse_value()?;
+                    expression = Expression::Power(Box::new(expression), Box::new(term))
+                }
                 Token::Factorial => {
                     expression = Expression::Factorial(Box::new(expression));
                 }

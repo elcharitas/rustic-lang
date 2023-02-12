@@ -71,7 +71,11 @@ impl<'a> Interpreter<'a> {
                 Ok((1..=factor).product())
             }
             Expression::Decimal(_) => todo!(),
-            Expression::Power(_, _) => todo!(),
+            Expression::Power(left, right) => {
+                let left = self.evaluate_expression(*left)?;
+                let right = self.evaluate_expression(*right)?;
+                Ok(left.pow(right.try_into().unwrap()))
+            }
             Expression::None => Ok(0),
         }
     }
